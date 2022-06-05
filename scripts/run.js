@@ -1,0 +1,34 @@
+// This file compiles and deploys our smart contract. 
+
+const main = async() => {
+    const [owner, randomPerson] = await hre.ethers.getSigners();
+    // Compiles our smart contract, generates all the necessary files and stores them in the artifacts directory. 
+    const waveContractFactory = await hre.ethers.getContractFactory("WavePortal");
+    // Hardhat here will create a local network for just this contract. 
+    const waveContract = await waveContractFactory.deploy();
+    await waveContract.deployed();
+    // This will give the address of the deployed contract. 
+    console.log("Contract deployed to: ", waveContract.address);
+    console.log("Contract deployed by: ", owner.address);
+
+    let waveCount;
+    waveCount = await waveContract.getTotalWaves();
+
+    let waveTxn = await waveContract.wave();
+    await waveTxn.wait();
+
+    waveCount = await waveContract.getTotalWaves();
+};
+
+const runMain = async () => {
+    try {
+      await main();
+      process.exit(0); // exit Node process without error
+    } catch (error) {
+      console.log(error);
+      process.exit(1); // exit Node process while indicating 'Uncaught Fatal Exception' error
+    }
+    // Read more about Node exit ('process.exit(num)') status codes here: https://stackoverflow.com/a/47163396/7974948
+  };
+  
+  runMain();
